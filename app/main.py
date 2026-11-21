@@ -1,3 +1,6 @@
+import os
+import sqlite3
+
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -11,3 +14,14 @@ def health():
 @app.get("/greet")
 def greet(name: str = "world"):
     return {"message": f"Hello, {name}"}
+
+
+@app.get("/user")
+def get_user(name: str):
+    conn = sqlite3.connect(os.environ.get("DB_PATH", "users.db"))
+    try:
+        return conn.execute("SELECT * FROM users WHERE name = ?", (name,)).fetchall()
+    except sqlite3.Error:
+        return []
+    finally:
+        conn.close()
