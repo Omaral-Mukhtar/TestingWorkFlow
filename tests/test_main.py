@@ -25,3 +25,9 @@ def test_user(tmp_path, monkeypatch):
 
     monkeypatch.setenv("DB_PATH", str(db))
     assert client.get("/user?name=Omar").json() == [["Omar"]]
+
+
+def test_user_db_error(tmp_path, monkeypatch):
+    empty_db = tmp_path / "empty.db"
+    monkeypatch.setenv("DB_PATH", str(empty_db))
+    assert client.get("/user?name=Omar").json() == []
