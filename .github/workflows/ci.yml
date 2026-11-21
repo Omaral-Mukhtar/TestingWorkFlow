@@ -24,7 +24,7 @@ jobs:
 
       - name: Install dependencies & run tests
         run: |
-          pip install -r requirements.txt
+          pip install --require-hashes --only-binary :all: -r requirements.txt
           python -m pytest --cov=app --cov-report=xml
 
       - name: Cache SonarQube packages
