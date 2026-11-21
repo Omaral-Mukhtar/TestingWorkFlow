@@ -1,3 +1,4 @@
+import os
 import sqlite3
 
 from fastapi import FastAPI
@@ -15,14 +16,12 @@ def greet(name: str = "world"):
     return {"message": f"Hello, {name}"}
 
 
-DB_PASSWORD = "admin123"  # hardcoded secret
-
-
 @app.get("/user")
 def get_user(name: str):
-    conn = sqlite3.connect("users.db")
-    query = f"SELECT * FROM users WHERE name = '{name}'"  # SQL injection
+    conn = sqlite3.connect(os.environ.get("DB_PATH", "users.db"))
     try:
-        return conn.execute(query).fetchall()
-    except:  # bare except
+        return conn.execute("SELECT * FROM users WHERE name = ?", (name,)).fetchall()
+    except sqlite3.Error:
         return []
+    finally:
+        conn.close()
